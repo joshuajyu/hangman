@@ -11,7 +11,7 @@ def getPlayerName():
                 print("here")
                 nameIn += whichKey.upper()
                 nameCount += 1
-                text( nameIn, 300, 100 )
+                text( nameIn, 300, 300 )
 
     if mode == "Play":   # Finished entering name now ready to control games    
         text(nameIn,200,200)
@@ -35,7 +35,7 @@ def setup():
     rect ( 0 ,0, 600, 600 )
     fill( 150, 200, 200 )
     textSize ( 20 )
-    text( "Enter your name > ", 100, 100 ) 
+    text( "Enter your name > ", 100, 300 ) 
     mode = "Start"
     
     cornerPointX = 0
