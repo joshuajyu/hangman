@@ -1,5 +1,105 @@
 #hangman
+import random
+def setup():
+    global gamemode, font, hangman
+    gamemode = "startMenu"
+    font = loadFont("BradleyHandITC-48.vlw")
+    words = getFileInfo("hangmanwords.txt")
+    hangman = {1:loadImage("hangman1.png"), 2:loadImage("hangman2.png"), 3:loadImage("hangman3.png"), 4:loadImage("hangman4.png"), 5:loadImage("hangman5.png"), 6:loadImage("hangman6.png")} 
+    print(words)
+    size(800,600)
+    
+def draw():
+    if gamemode == "startMenu":
+        startMenu()
+    if gamemode == "playerMenu":
+        playerMenu()
 
+def getFileInfo(fileName):
+    file = open(fileName)
+    fileInfo = []
+    fileText = file.readlines()
+    for x in fileText:
+        x = x.strip()
+        x = x.split(", ")
+        fileInfo.append(x)
+    print(fileInfo)
+    return fileInfo
+
+def startMenu(): #start menu
+    background(255)
+    textFont(font)
+    textAlign(CENTER)
+    textSize(48)
+    fill(0)
+    text("hangman", width/2, height/5)
+    if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
+        fill(225)
+        text("play", width/2, (height/5)*2)
+        fill(0)
+    else:
+        fill(0)
+        text("play", width/2, (height/5)*2)
+    if width/2-50 <= mouseX <= width/2+50 and 325 <= mouseY <= 380:
+        fill(225)
+        text("help", width/2, (height/5)*3)
+        fill(0)
+    else:
+        fill(0)
+        text("help", width/2, (height/5)*3)
+    if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485:
+        fill(225)
+        text("scores", width/2, (height/5)*4)
+        fill(0)
+    else:
+        fill(0)
+        text("scores", width/2, (height/5)*4)
+    
+def playerMenu(): #where you select number of players and input names
+    background(255)
+    textFont(font)
+    textAlign(CENTER)
+    textSize(48)
+    fill(0)
+    text("Type your name", width/2, height/3)
+        
+    
+def helpMenu(): #help menu
+    pass
+
+def scoresMenu(): #scores menu
+    pass
+    
+def game():
+    pass
+
+def restart(): #restarts the game
+    pass
+    
+def mousePressed():
+    global gamemode
+    print(mouseX, mouseY)
+    if gamemode == "startMenu":
+        if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
+            gamemode = "playerMenu"
+        if width/2-50 <= mouseX <= width/2+50 <= mouseY <= 380:
+            gamemode = "helpMenu"
+        if width/2-60 <= mouseX <= width/2+60 <= mouseY <= 485:
+            gamemode = "scoresMenu"
+
+    
+def keyReleased():
+    global whichKey, asciList, controlKeys
+    
+    #for entering name
+    if key == CODED:
+        if keyCode in controlKeys:
+            whichKey = keyCode
+    elif key in asciList:
+        whichKey = key
+    else:
+        whichKey = ''
+'''
 def getPlayerName():
     global whichKey, nameIn, nameLimit, nameCount, mode
     
@@ -134,3 +234,4 @@ def keyReleased():
         whichKey = key
     else:
         whichKey = ''
+'''
