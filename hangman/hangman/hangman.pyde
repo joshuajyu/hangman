@@ -2,16 +2,19 @@
 import random
 import time
 def setup():
-    global gamemode, font, hangman, playerName
+    global gamemode, font, hangman, playerName, wrongGuesses, hangmanImage, guessLimit
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
-    hangman = {1:loadImage("hangman1.png"), 2:loadImage("hangman2.png"), 3:loadImage("hangman3.png"), 4:loadImage("hangman4.png"), 5:loadImage("hangman5.png"), 6:loadImage("hangman6.png")} 
+    hangmanImage = {0:loadImage("hangman.png"), 1:loadImage("hangman1.png"), 2:loadImage("hangman2.png"), 3:loadImage("hangman3.png"), 4:loadImage("hangman4.png"), 5:loadImage("hangman5.png"), 6:loadImage("hangman6.png")} 
     print(words)
     size(800,600)
     playerName = []
+    wrongGuesses = 0
+    guessLimit = 7
     
 def draw():
+    imageMode(CENTER)
     if gamemode == "startMenu":
         startMenu()
     if gamemode == "playerMenu":
@@ -69,7 +72,7 @@ def playerMenu(): #where you select number of players and input names
     fill(0)
     text("type your name", width/2, height/3)
     text(getPlayerName(), width/2, height/2)
-    if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485 or len(playerName) < minLimit:
+    if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485 or len(playerName) <= minLimit:
         fill(225)
         text("begin", width/2, (height/5)*4)
         fill(0)
@@ -96,13 +99,15 @@ def scoresMenu(): #scores menu
     pass
     
 def game():
+    global wrongGuesses
     background(255)
+    image(hangmanImage[wrongGuesses], width/2, height/2)
 
 def restart(): #restarts the game
     pass
     
 def mousePressed():
-    global gamemode, minLimit
+    global gamemode, minLimit, wrongGuesses
     print(mouseX, mouseY)
     if gamemode == "startMenu" and mouseButton == LEFT:
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
@@ -119,7 +124,7 @@ def mousePressed():
             gamemode = "startMenu"
     
 def keyPressed():
-    global gamemode, playerName
+    global gamemode, playerName, wrongGuesses, guessLimit
     nameLimit = 20
     validKeys = "abcdefghijklmnopqrstuvwxyz "
     if gamemode == "playerMenu":
@@ -128,5 +133,6 @@ def keyPressed():
             playerName.append(curKey)
             print(curKey)
         if key == BACKSPACE and len(playerName) > 0:
-            print("bruh")
             playerName.pop()
+    if gamemode == "inGame" and wrongGuesses <= guessLimit:
+        wrongGuesses += 1
