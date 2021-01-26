@@ -23,6 +23,7 @@ def draw():
         game()
 
 def getFileInfo(fileName):
+    global fileInfo
     file = open(fileName)
     fileInfo = []
     fileText = file.readlines()
@@ -99,9 +100,13 @@ def scoresMenu(): #scores menu
     pass
     
 def game():
-    global wrongGuesses
+    global wrongGuesses, fileInfo
     background(255)
-    image(hangmanImage[wrongGuesses], width/2, height/2)
+    image(hangmanImage[wrongGuesses], width/3, height/2)
+    randWord = random.randint(0,len(fileInfo)) - 1 #*****need to make this run once*******
+    guessWord = fileInfo[randWord][0]
+    for letter in range(len(guessWord)):
+        line(500+(40*letter),400,530+(40*letter),400)
 
 def restart(): #restarts the game
     pass

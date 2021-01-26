@@ -1,5 +1,5 @@
-word, hint, worth
-word, hint, worth
-word, hint, worth
-word, hint, worth
-word, hint, worth
+bear, hint, worth
+photo, hint, worth
+female, hint, worth
+scrunchie, hint, worth
+agenda, hint, worth
