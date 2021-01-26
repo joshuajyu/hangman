@@ -1,5 +1,7 @@
-bear, hint, worth
-photo, hint, worth
-female, hint, worth
-scrunchie, hint, worth
-agenda, hint, worth
+bear, hint
+photo, hint
+female, hint
+scrunchie, hint
+agenda, hint
+stupendous, hint
+insomnia, hint
