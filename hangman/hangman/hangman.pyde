@@ -31,6 +31,8 @@ def draw():
         keyboardDisplay()
     if gamemode == "end":
         endScreen()
+    if gamemode == "won":
+        wonScreen()
 
 def getFileInfo(fileName):
     global fileInfo
@@ -131,10 +133,17 @@ def game():
         gamemode = "end"
 
 def wordGenerator():
-    global displayWord, guessWord, worth
-    randWord = random.randint(0,len(fileInfo) - 1) #*****need to make this run once*******
-    guessWord = fileInfo[randWord][0]
-    displayWord = ["_"]*len(guessWord)
+    global displayWord, guessWord, worth, wordHint, gamemode
+    if len(fileInfo) != 0:
+        randWord = random.randint(0,len(fileInfo) - 1) #*****need to make this run once*******
+        guessWord = fileInfo[randWord][0]
+        wordHint = fileInfo[randWord][1]
+        displayWord = ["_"]*len(guessWord)
+        fileInfo.pop(randWord)
+    elif len(fileInfo) == 0:
+        gamemode = "won"
+        
+    
 
 
 def keyboardDisplay():
@@ -157,6 +166,14 @@ def endScreen():
     background(255)
     fill(0)
     text("You Lost!", width/2, height/2)
+
+def wonScreen():
+    textFont(font)
+    textAlign(CENTER, CENTER)
+    textSize(48)
+    background(255)
+    fill(0)
+    text("You Won!", width/2, height/2)
 
 def restart(): #restarts the game
     pass
