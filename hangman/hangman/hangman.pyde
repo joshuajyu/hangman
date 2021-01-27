@@ -1,8 +1,9 @@
 #hangman
 import random
 import time
+import pickle
 def setup():
-    global gamemode, font, hangman, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points
+    global highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscore
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
@@ -13,13 +14,18 @@ def setup():
     wordGenerator()
     listGuessed = []
     listWrongGuesses = []
-    print(words)
+    #print(words)
     size(800,600)
     playerName = []
     wrongGuesses = 0
     guessLimit = 6
     points = 0
-        
+    highscore = {}
+    tohighscore = open("highscores.txt", "wb")
+    fromhighscore = open("highscores.txt", "rb")
+    hintChosen = False
+    
+            
 def draw():
     imageMode(CENTER)
     if gamemode == "startMenu":
@@ -29,6 +35,7 @@ def draw():
     if gamemode == "inGame":
         game()
         keyboardDisplay()
+        hintDisplay()
     if gamemode == "end":
         endScreen()
     if gamemode == "won":
@@ -43,7 +50,7 @@ def getFileInfo(fileName):
         x = x.strip()
         x = x.split(", ")
         fileInfo.append(x)
-    print(fileInfo)
+    #print(fileInfo)
     return fileInfo
 
 def startMenu(): #start menu
@@ -143,7 +150,20 @@ def wordGenerator():
     elif len(fileInfo) == 0:
         gamemode = "won"
         
-    
+def hintDisplay():
+    textFont(font)
+    textAlign(CENTER, CENTER)
+    textSize(32)
+    fill(0)
+    if hintChosen:
+        text("Click for Hint", 550, 30)
+        text(wordHint, 550, 60)
+    elif 450 <= mouseX <= 650 and 15 <= mouseY <= 50:
+        fill(225)
+        text("Click for Hint", 550, 30)
+    else:
+        fill(0)
+        text("Click for Hint", 550, 30)
 
 
 def keyboardDisplay():
@@ -165,7 +185,12 @@ def endScreen():
     textSize(48)
     background(255)
     fill(0)
-    text("You Lost!", width/2, height/2)
+    #addScore()
+    text("You Lost!", width/2, height/3)
+    text("Final Score: "+str(points), width/2, height/2)
+    if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
+        fill(225)
+    text("Click to restart", width/2, height/3*2)
 
 def wonScreen():
     textFont(font)
@@ -173,16 +198,45 @@ def wonScreen():
     textSize(48)
     background(255)
     fill(0)
-    text("You Won!", width/2, height/2)
+    #addScore()
+    text("You Won!", width/2, height/3)
+    text("Final Score: "+str(points), width/2, height/2)
+    if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
+        fill(225)
+    text("Click to restart", width/2, height/3*2)
+    
+
+'''
+def addScore():
+    global highscore, points, playerName, fromhighscore, tohighscore
+    highscore = pickle.load(fromhighscore)
+    highscore[points](points:playerName)
+    fromhighscore.close()
+    pickle.dump(highscore, tohighscore)
+    tohighscore.close()
+    #print(highscore)
+'''
 
 def restart(): #restarts the game
-    pass
+    global points, gamemode, playerName, wrongGuesses, keyboard, listWrongGuesses, listGuessed, hintChosen
+    gamemode = "startMenu"
+    playerName = []
+    getFileInfo("hangmanwords.txt")
+    wordGenerator()
+    keyboard = [[['q', True],['w', True],['e', True],['r', True],['t', True],['y', True],['u', True],['i', True],['o', True],['p', True]],
+    [['a', True],['s', True],['d', True],['f', True],['g', True],['h', True],['j', True],['k', True],['l', True]],
+    [['z', True],['x', True],['c', True],['v', True],['b', True],['n', True],['m', True]]]
+    wrongGuesses = 0
+    listWrongGuesses = []
+    listGuessed = []
+    hintChosen = False
+    points = 0
     
     
 def mousePressed():
-    global gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed
+    global gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
     keyCoords = [[40, 350], [120, 350], [200, 350], [280, 350], [360, 350], [440, 350], [520, 350], [600, 350], [680, 350], [760, 350], [80, 430], [160, 430], [240, 430], [320, 430], [400, 430], [480, 430], [560, 430], [640, 430], [720, 430], [160, 510], [240, 510], [320, 510], [400, 510], [480, 510], [560, 510], [640, 510]]
-    print(mouseX, mouseY)
+    #print(mouseX, mouseY)
     if gamemode == "startMenu" and mouseButton == LEFT:
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
             gamemode = "playerMenu"
@@ -197,6 +251,7 @@ def mousePressed():
                 time.sleep(0.5)
         if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
             gamemode = "startMenu"
+            playerName = []
     if gamemode == "inGame" and mouseButton == LEFT:
         for x in range(len(keyCoords)):
             if keyCoords[x][0]-20 <= mouseX <= keyCoords[x][0]+20 and keyCoords[x][1]-20 <= mouseY <= keyCoords[x][1]+20:
@@ -209,18 +264,21 @@ def mousePressed():
                 if 19 <= x <= 25:
                     row = 2
                     column = x - 19
-                print("key "+str(x)+" clicked")
+                #print("key "+str(x)+" clicked")
                 if keyboard[row][column][1] == True:
                     keyboard[row][column][1] = False
                     listGuessed.append(keyboard[row][column][0])
                 for y in range(len(listGuessed)):
                     if listGuessed[y] in guessWord:
                         for z in range(guessWord.count(listGuessed[y])):
-                            print("correct letter guessed")
+                            #print("correct letter guessed")
                             displayWord[[i for i, n in enumerate(list(guessWord)) if n == listGuessed[y]][z]] = listGuessed[y]
                         if ''.join(displayWord) == guessWord:
-                            points += len(guessWord)
-                            print(points)
+                            if hintChosen == True:
+                                points += int(round(len(guessWord)/2))
+                            else:
+                                points += len(guessWord)
+                            #print(points)
                             wordGenerator()
                             keyboard = [[['q', True],['w', True],['e', True],['r', True],['t', True],['y', True],['u', True],['i', True],['o', True],['p', True]],
                             [['a', True],['s', True],['d', True],['f', True],['g', True],['h', True],['j', True],['k', True],['l', True]],
@@ -228,13 +286,19 @@ def mousePressed():
                             wrongGuesses = 0
                             listWrongGuesses = []
                             listGuessed = []
+                            hintChosen = False
                     elif listGuessed[y] not in listWrongGuesses:
                         listWrongGuesses.append(listGuessed[y])
                         wrongGuesses = len(listWrongGuesses)
-                        print("wrong guesses: "+str(wrongGuesses))
-                print(listGuessed)
-                print(keyboard)
-                print(displayWord)
+                        #print("wrong guesses: "+str(wrongGuesses))
+                #print(listGuessed)
+                #print(keyboard)
+                #print(displayWord)
+            if 450 <= mouseX <= 650 and 15 <= mouseY <= 50:
+                hintChosen = True
+    if gamemode == "won" or gamemode == "end":
+        if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
+            restart()
     
 def keyPressed():
     global gamemode, playerName, guessLimit
@@ -244,6 +308,6 @@ def keyPressed():
         if keyCode != SHIFT and key in validKeys and len(playerName) < nameLimit:
             curKey = key
             playerName.append(curKey)
-            print(curKey)
+            #print(curKey)
         if key == BACKSPACE and len(playerName) > 0:
             playerName.pop()
