@@ -1,7 +1,6 @@
-bear, hint
-photo, hint
-female, hint
-scrunchie, hint
-agenda, hint
-stupendous, hint
-insomnia, hint
+bear, fuzzy wuzzy
+photo, look at this
+female, fee fie foe fum
+scrunchie, for hair
+agenda, what no one ever uses
+insomnia, suffering
