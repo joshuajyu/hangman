@@ -198,7 +198,7 @@ def endScreen():
     fill(0)
     #addScore()
     text("The word was " + guessWord, width/2, height/6)
-    text("You Lost!", width/2, height/3)
+    text(getPlayerName()+", you lost!", width/2, height/3)
     text("Final Score: "+str(points), width/2, height/2)
     if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
         fill(225)
@@ -211,7 +211,7 @@ def wonScreen():
     background(255)
     fill(0)
     #addScore()
-    text("You Won!", width/2, height/3)
+    text(getPlayerName()+ ", you won!", width/2, height/3)
     text("Final Score: "+str(points), width/2, height/2)
     if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
         fill(225)
