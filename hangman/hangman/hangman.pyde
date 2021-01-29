@@ -1,9 +1,16 @@
 #hangman
+'''
+photo, look at this
+female, fee fie foe fum
+scrunchie, for hair
+agenda, what no one ever uses
+insomnia, suffering
+'''
 import random
 import time
 import pickle
 def setup():
-    global highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscore
+    global highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscoreDict
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
@@ -20,7 +27,7 @@ def setup():
     wrongGuesses = 0
     guessLimit = 6
     points = 0
-    highscore = {}
+    highscoreDict = {}
     tohighscore = open("highscores.txt", "wb")
     fromhighscore = open("highscores.txt", "rb")
     hintChosen = False
@@ -205,6 +212,7 @@ def endScreen():
     text("Click to restart", width/2, height/3*2)
 
 def wonScreen():
+    global playerName, highscoreDict, points
     textFont(font)
     textAlign(CENTER, CENTER)
     textSize(48)
@@ -216,17 +224,29 @@ def wonScreen():
     if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
         fill(225)
     text("Click to restart", width/2, height/3*2)
+    addscore()
+        
+def addscore():
+    global highscoreDict, points, playerName, fromhighscore, tohighscore
+    highscoreDict[points]=str("".join(playerName))
+    filename = 'highscores'
+    outfile = open(filename, 'wb')
+    pickle.dump(highscoreDict,outfile)
+    outfile.close()
     
-
+    infile = open(filename, 'rb')
+    newdict = pickle.load(infile)
+    infile.close()
+    
 '''
 def addScore():
-    global highscore, points, playerName, fromhighscore, tohighscore
-    highscore = pickle.load(fromhighscore)
-    highscore[points](points:playerName)
+    global highscoreDict, points, playerName, fromhighscore, tohighscore
+    highscoreDict = pickle.load(fromhighscore)
+    highscoreDict[points](points:playerName)
     fromhighscore.close()
     pickle.dump(highscore, tohighscore)
     tohighscore.close()
-    #print(highscore)
+    #print(highscoreDict)
 '''
 
 def restart(): #restarts the game
