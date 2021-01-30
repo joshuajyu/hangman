@@ -1,11 +1,4 @@
-#hangman
-'''
-photo, look at this
-female, fee fie foe fum
-scrunchie, for hair
-agenda, what no one ever uses
-insomnia, suffering
-'''
+#hangman by alexandra sergueeva and joshua yu
 import random
 import time
 import pickle
@@ -28,8 +21,6 @@ def setup():
     guessLimit = 6
     points = 0
     highscoreDict = {}
-    tohighscore = open("highscores.txt", "wb")
-    fromhighscore = open("highscores.txt", "rb")
     hintChosen = False
     
             
@@ -203,13 +194,12 @@ def endScreen():
     textSize(48)
     background(255)
     fill(0)
-    #addScore()
-    text("The word was " + guessWord, width/2, height/6)
-    text(getPlayerName()+", you lost!", width/2, height/3)
-    text("Final Score: "+str(points), width/2, height/2)
-    if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
+    text("The word was " + guessWord, width/2, height/5)
+    text(getPlayerName()+", you lost!", width/2, (height/5)*2)
+    text("Final Score: "+str(points), width/2, (height/5)*3)
+    if 250 <= mouseX <= 550 and 470 <= mouseY <= 510:
         fill(225)
-    text("Click to restart", width/2, height/3*2)
+    text("Click to restart", width/2, (height/5)*4)
 
 def wonScreen():
     global playerName, highscoreDict, points
@@ -237,17 +227,6 @@ def addscore():
     infile = open(filename, 'rb')
     newdict = pickle.load(infile)
     infile.close()
-    
-'''
-def addScore():
-    global highscoreDict, points, playerName, fromhighscore, tohighscore
-    highscoreDict = pickle.load(fromhighscore)
-    highscoreDict[points](points:playerName)
-    fromhighscore.close()
-    pickle.dump(highscore, tohighscore)
-    tohighscore.close()
-    #print(highscoreDict)
-'''
 
 def restart(): #restarts the game
     global points, gamemode, playerName, wrongGuesses, keyboard, listWrongGuesses, listGuessed, hintChosen
@@ -341,10 +320,12 @@ def mousePressed():
         #if "menu" in game mode clicked
         if 660 <= mouseX <= 720 and 555 <= mouseY <= 575:
             gamemode = "startMenu"
-    if gamemode == "won" or gamemode == "end":
-        if 250 <= mouseX <= 550 and 390 <= mouseY <= 420: #if "click to restart" clicked
+    if gamemode == "end":
+        if 250 <= mouseX <= 550 and 470 <= mouseY <= 510: #if "click to restart" clicked
             restart()
-    
+    if gamemode == "won":
+        if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
+            restart()
 def keyPressed():  #player name
     global gamemode, playerName, guessLimit
     nameLimit = 20
