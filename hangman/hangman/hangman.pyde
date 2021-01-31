@@ -2,8 +2,9 @@
 import random
 import time
 import pickle
+from datetime import datetime
 def setup():
-    global highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscoreDict
+    global scoreadded, highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscoreDict
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
@@ -14,7 +15,7 @@ def setup():
     wordGenerator()
     listGuessed = []
     listWrongGuesses = []
-    #print(words)
+    ###print(words)
     size(800,600)
     playerName = []
     wrongGuesses = 0
@@ -22,6 +23,7 @@ def setup():
     points = 0
     highscoreDict = {}
     hintChosen = False
+    scoreadded = False
     
             
 def draw():
@@ -30,6 +32,8 @@ def draw():
         startMenu()
     if gamemode == "playerMenu":
         playerMenu()
+    if gamemode == "scoresMenu":
+        scoresMenu()
     if gamemode == "inGame":
         game()
         keyboardDisplay()
@@ -48,7 +52,7 @@ def getFileInfo(fileName):
         x = x.strip()
         x = x.split(", ")
         fileInfo.append(x)
-    #print(fileInfo)
+    print(fileInfo)
     return fileInfo
 
 def startMenu(): #start menu
@@ -115,8 +119,60 @@ def helpMenu(): #help menu
 
 
 def scoresMenu(): #scores menu
-    pass
-    
+    global highscoreDict, points, playerName, fromhighscore, tohighscore
+    filename = 'highscores'
+    infile = open(filename, 'rb')
+    try:
+        highscoreDict = pickle.load(infile)
+    except EOFError:
+        highscoreDict = {}
+    infile.close()
+    background(255)
+    fill(0)
+    textSize(30)
+    textAlign(CENTER)
+    text("Scores", width/5, 50)
+    text("Name", (width/5)*2, 50)
+    text("Date", (width/5)*3, 50)
+    text("Time", (width/5)*4, 50)
+    itemlist = highscoreDict.items()
+    sortlist(itemlist)
+    if len(itemlist) > 10:
+        numloop = 10
+    else:
+        numloop = len(itemlist)
+    for x in range(numloop):
+        text(str(itemlist[x][1]), width/5, 100+50*x)
+        namedatetimelist = itemlist[x][0].split(", ")
+        text(str(namedatetimelist[0]), (width/5)*2, 100+50*x)
+        text(str(namedatetimelist[1]), (width/5)*3, 100+50*x)
+        text(str(namedatetimelist[2]), (width/5)*4, 100+50*x)
+    textSize(48)
+    if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
+        fill(225)
+        text("<", 50, 50)
+        fill(0)
+    else:
+        fill(0)
+        text("<", 50, 50)
+
+
+def sortlist(itemlist):
+    for z in range(len(itemlist)-1, 0, -1): #sorting by score
+        for y in range(z):
+            if itemlist[y][1] < itemlist[y+1][1]:
+                itemlist[y], itemlist[y+1] = itemlist[y+1], itemlist[y]
+    for z in range(len(itemlist)-1, 0, -1): #sorting by datetime
+        for y in range(z):
+            if itemlist[y][1] == itemlist[y+1][1]:
+                datetimeobj1 = datetime.strptime(itemlist[y][0].split(", ", 1)[1], "%m/%d/%Y, %H:%M:%S")
+                datetimeobj2 = datetime.strptime(itemlist[y+1][0].split(", ", 1)[1], "%m/%d/%Y, %H:%M:%S")
+                if datetimeobj1 > datetimeobj2:
+                    itemlist[y], itemlist[y+1] = itemlist[y+1], itemlist[y]
+                    
+                    
+    return itemlist
+
 def game():
     global wrongGuesses, fileInfo, guessWord, displayWord, gamemode
     background(255)
@@ -188,7 +244,7 @@ def keyboardDisplay(): #display letters
             text(keyboard[x][y][0],40+width/2-((80*len(keyboard[x]))/2)+(80*y), 350+(80*x))
             
 def endScreen():
-    global guessWord
+    global guessWord, scoreadded
     textFont(font)
     textAlign(CENTER, CENTER)
     textSize(48)
@@ -200,36 +256,50 @@ def endScreen():
     if 250 <= mouseX <= 550 and 470 <= mouseY <= 510:
         fill(225)
     text("Click to restart", width/2, (height/5)*4)
+    if scoreadded == False:
+        addscore()
+        scoreadded = True
 
 def wonScreen():
-    global playerName, highscoreDict, points
+    global playerName, highscoreDict, points, scoreadded
     textFont(font)
     textAlign(CENTER, CENTER)
     textSize(48)
     background(255)
     fill(0)
-    #addScore()
     text(getPlayerName()+ ", you won!", width/2, height/3)
     text("Final Score: "+str(points), width/2, height/2)
     if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
         fill(225)
     text("Click to restart", width/2, height/3*2)
-    addscore()
+    if scoreadded == False:
+        addscore()
+        scoreadded = True
         
 def addscore():
     global highscoreDict, points, playerName, fromhighscore, tohighscore
-    highscoreDict[points]=str("".join(playerName))
     filename = 'highscores'
-    outfile = open(filename, 'wb')
-    pickle.dump(highscoreDict,outfile)
-    outfile.close()
-    
+    ##print("before open")
     infile = open(filename, 'rb')
-    newdict = pickle.load(infile)
+    ##print("before load")
+    try:
+        highscoreDict = pickle.load(infile)
+    except EOFError:
+        highscoreDict = {}
     infile.close()
+    itemlist = highscoreDict.items()
+    if len(highscoreDict) < 10 or points > sortlist(itemlist)[9][1]:
+        outfile = open(filename, 'wb')
+        highscoreDict[str("".join(playerName))+", "+str(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))] = points
+        if len(highscoreDict) > 10:
+            itemlist = highscoreDict.items()
+            del highscoreDict[sortlist(itemlist)[9][0]]
+        pickle.dump(highscoreDict, outfile)
+        outfile.close()    
+
 
 def restart(): #restarts the game
-    global points, gamemode, playerName, wrongGuesses, keyboard, listWrongGuesses, listGuessed, hintChosen
+    global points, gamemode, playerName, wrongGuesses, keyboard, listWrongGuesses, listGuessed, hintChosen, scoreadded
     gamemode = "startMenu"
     playerName = []
     getFileInfo("hangmanwords.txt")
@@ -241,6 +311,7 @@ def restart(): #restarts the game
     listWrongGuesses = []
     listGuessed = []
     hintChosen = False
+    scoreadded = False
     points = 0
     
     
@@ -248,14 +319,14 @@ def mousePressed():
     global gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
     #center coords of each letter on screen 
     keyCoords = [[40, 350], [120, 350], [200, 350], [280, 350], [360, 350], [440, 350], [520, 350], [600, 350], [680, 350], [760, 350], [80, 430], [160, 430], [240, 430], [320, 430], [400, 430], [480, 430], [560, 430], [640, 430], [720, 430], [160, 510], [240, 510], [320, 510], [400, 510], [480, 510], [560, 510], [640, 510]]
-    print(mouseX, mouseY)
+    ##print(mouseX, mouseY)
     if gamemode == "startMenu" and mouseButton == LEFT:
         #if "start" clicked
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
             gamemode = "playerMenu"
         #if "help clicked"
         if width/2-50 <= mouseX <= width/2+50 and 325 <= mouseY <= 380:
-            gamemode = "helpMenu"
+            gamemode = "startMenu"
         #if "scores clicked"
         if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485:
             gamemode = "scoresMenu"
@@ -269,7 +340,9 @@ def mousePressed():
         if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
             gamemode = "startMenu"
             playerName = []
-        
+    if gamemode == "scoresMenu":
+        if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
+            gamemode = "startMenu"
     if gamemode == "inGame" and mouseButton == LEFT:
         for x in range(len(keyCoords)):
             if keyCoords[x][0]-20 <= mouseX <= keyCoords[x][0]+20 and keyCoords[x][1]-20 <= mouseY <= keyCoords[x][1]+20:
@@ -282,14 +355,14 @@ def mousePressed():
                 if 19 <= x <= 25:
                     row = 2
                     column = x - 19
-                #print("key "+str(x)+" clicked")
+                ###print("key "+str(x)+" clicked")
                 if keyboard[row][column][1] == True:  #if letter clicked, turn it off and add letter to listGuessed[]
                     keyboard[row][column][1] = False
                     listGuessed.append(keyboard[row][column][0])
                 for y in range(len(listGuessed)): 
                     if listGuessed[y] in guessWord: #if clicked letter is in the guess word, add letter to displayWord[]
                         for z in range(guessWord.count(listGuessed[y])):
-                            #print("correct letter guessed")
+                            ###print("correct letter guessed")
                             displayWord[[i for i, n in enumerate(list(guessWord)) if n == listGuessed[y]][z]] = listGuessed[y]
                         if ''.join(displayWord) == guessWord: #if letters in displayWord[] match the guessWord, add points and generate new word, and reset keyboard, num wrong guesses, and list of guessed letters
                             if hintChosen == True:
@@ -307,10 +380,10 @@ def mousePressed():
                     elif listGuessed[y] not in listWrongGuesses:
                         listWrongGuesses.append(listGuessed[y])
                         wrongGuesses = len(listWrongGuesses)
-                        #print("wrong guesses: "+str(wrongGuesses))
-                #print(listGuessed)
-                #print(keyboard)
-                #print(displayWord)
+                        ###print("wrong guesses: "+str(wrongGuesses))
+                ###print(listGuessed)
+                ###print(keyboard)
+                ###print(displayWord)
             #if "click for hint" clicked
             if 450 <= mouseX <= 650 and 15 <= mouseY <= 50:
                 hintChosen = True
@@ -326,6 +399,7 @@ def mousePressed():
     if gamemode == "won":
         if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
             restart()
+            
 def keyPressed():  #player name
     global gamemode, playerName, guessLimit
     nameLimit = 20
@@ -334,6 +408,6 @@ def keyPressed():  #player name
         if keyCode != SHIFT and key in validKeys and len(playerName) < nameLimit:
             curKey = key
             playerName.append(curKey)
-            #print(curKey)
+            ###print(curKey)
         if key == BACKSPACE and len(playerName) > 0:
             playerName.pop()
