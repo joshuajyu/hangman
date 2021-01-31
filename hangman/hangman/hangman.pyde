@@ -50,9 +50,8 @@ def getFileInfo(fileName):
     fileText = file.readlines()
     for x in fileText:
         x = x.strip()
-        x = x.split(", ")
+        x = x.split(",")
         fileInfo.append(x)
-    print(fileInfo)
     return fileInfo
 
 def startMenu(): #start menu
