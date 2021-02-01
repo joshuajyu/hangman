@@ -48,3 +48,8 @@ diamond,carbon
 mutter,whisper
 attention,focused
 spy,espionage
+zugzwang,(chess) black to move and lose
+festoon,hang it decoratively
+resentment,indignation
+alligator,semi-aquatic reptile
+ant,insect

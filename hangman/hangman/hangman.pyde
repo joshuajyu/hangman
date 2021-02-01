@@ -34,6 +34,8 @@ def draw():
         playerMenu()
     if gamemode == "scoresMenu":
         scoresMenu()
+    if gamemode == "helpMenu":
+        helpMenu()
     if gamemode == "inGame":
         game()
         keyboardDisplay()
@@ -114,7 +116,40 @@ def getPlayerName():
     return str("".join(playerName))
     
 def helpMenu(): #help menu
-    print("helpMenu")
+    global helpmode, prevGamemode
+    imageMode(CORNER)
+    background(255)
+    if helpmode == "help1":
+        help = loadImage("help1.jpg")
+        image(help,0,40,830,450)
+        #print(mouseX,mouseY)
+        #prevGamemode = "startMenu"
+        stroke(255,0,0)
+        line(539,209,575,209)
+        stroke(0)
+        if 700 <= mouseX <= 735 and 510 <= mouseY <= 540:
+            fill(225)
+            text(">", 720, 540)
+            fill(0)
+        else:
+            fill(0)
+            text(">", 720, 540)
+
+    if helpmode == "help2":
+        help = loadImage("help2.jpg")
+        image(help,0,80,830,400)
+        #prevGamemode = "helpMenu"
+        
+    if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
+        fill(225)
+        text("<", 50, 50)
+        fill(0)
+    else:
+        fill(0)
+        text("<", 50, 50)
+        
+
+
 
 
 def scoresMenu(): #scores menu
@@ -315,7 +350,7 @@ def restart(): #restarts the game
     
     
 def mousePressed():
-    global gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
+    global helpmode, prevGamemode, gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
     #center coords of each letter on screen 
     keyCoords = [[40, 350], [120, 350], [200, 350], [280, 350], [360, 350], [440, 350], [520, 350], [600, 350], [680, 350], [760, 350], [80, 430], [160, 430], [240, 430], [320, 430], [400, 430], [480, 430], [560, 430], [640, 430], [720, 430], [160, 510], [240, 510], [320, 510], [400, 510], [480, 510], [560, 510], [640, 510]]
     ##print(mouseX, mouseY)
@@ -323,12 +358,29 @@ def mousePressed():
         #if "start" clicked
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
             gamemode = "playerMenu"
-        #if "help clicked"
+        #if "help" clicked
         if width/2-50 <= mouseX <= width/2+50 and 325 <= mouseY <= 380:
-            gamemode = "startMenu"
+            gamemode = "helpMenu"
+            helpmode = "help1"
+            print(gamemode)
         #if "scores clicked"
         if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485:
             gamemode = "scoresMenu"
+            print("scores")
+
+    #if next arrow clicked in help menu
+    if 700 <= mouseX <= 735 and 510 <= mouseY <= 540:
+        helpmode = "help2"
+        #gamemode = "helpMenu"
+        print(helpmode)
+    if gamemode == "helpMenu":
+        if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
+            if helpmode == "help1":
+                gamemode = "startMenu"
+            if helpmode == "help2":
+                gamemode = "helpMenu"
+                helpmode = "help1"
+
     #if "begin" clicked
     if gamemode == "playerMenu" and mouseButton == LEFT:
         if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485:
@@ -339,6 +391,7 @@ def mousePressed():
         if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
             gamemode = "startMenu"
             playerName = []
+ 
     if gamemode == "scoresMenu":
         if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
             gamemode = "startMenu"
@@ -389,6 +442,7 @@ def mousePressed():
         #if "help" in game mode clicked
         if 735 <= mouseX <= 780 and 555 <= mouseY <= 575:
             gamemode = "helpMenu"
+            helpmode = "help1"
         #if "menu" in game mode clicked
         if 660 <= mouseX <= 720 and 555 <= mouseY <= 575:
             gamemode = "startMenu"
