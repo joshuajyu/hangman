@@ -8,7 +8,7 @@ def setup():
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
-    hangmanImage = {0:loadImage("hangman.png"), 1:loadImage("hangman1.png"), 2:loadImage("hangman2.png"), 3:loadImage("hangman3.png"), 4:loadImage("hangman4.png"), 5:loadImage("hangman5.png"), 6:loadImage("hangman6.png")} 
+    hangmanImage = {0:loadImage("hangman.png"), 1:loadImage("hangman1.png"), 2:loadImage("hangman2.png"), 3:loadImage("hangman3.png"), 4:loadImage("hangman4.png"), 5:loadImage("hangman5.png"), 6:loadImage("hangman6.png")}
     keyboard = [[['q', True],['w', True],['e', True],['r', True],['t', True],['y', True],['u', True],['i', True],['o', True],['p', True]],
                 [['a', True],['s', True],['d', True],['f', True],['g', True],['h', True],['j', True],['k', True],['l', True]],
                 [['z', True],['x', True],['c', True],['v', True],['b', True],['n', True],['m', True]]]
@@ -24,8 +24,8 @@ def setup():
     highscoreDict = {}
     hintChosen = False
     scoreadded = False
-    
-            
+   
+           
 def draw():
     imageMode(CENTER)
     if gamemode == "startMenu":
@@ -84,7 +84,7 @@ def startMenu(): #start menu
     else:
         fill(0)
         text("scores", width/2, (height/5)*4)
-    
+   
 def playerMenu(): #where you select number of players and input names
     global minLimit
     background(255)
@@ -109,21 +109,20 @@ def playerMenu(): #where you select number of players and input names
     else:
         fill(0)
         text("<", 50, 50)
-    
+   
 def getPlayerName():
     global curKey, playerName
     curKey = ""
     return str("".join(playerName))
-    
+   
 def helpMenu(): #help menu
     global helpmode, prevGamemode
     imageMode(CORNER)
+    textSize(48)
     background(255)
     if helpmode == "help1":
         help = loadImage("help1.jpg")
-        image(help,0,40,830,450)
-        #print(mouseX,mouseY)
-        #prevGamemode = "startMenu"
+        image(help,0,60,830,450)
         stroke(255,0,0)
         line(539,209,575,209)
         stroke(0)
@@ -138,8 +137,7 @@ def helpMenu(): #help menu
     if helpmode == "help2":
         help = loadImage("help2.jpg")
         image(help,0,80,830,400)
-        #prevGamemode = "helpMenu"
-        
+       
     if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
         fill(225)
         text("<", 50, 50)
@@ -147,7 +145,7 @@ def helpMenu(): #help menu
     else:
         fill(0)
         text("<", 50, 50)
-        
+       
 
 
 
@@ -203,8 +201,8 @@ def sortlist(itemlist):
                 datetimeobj2 = datetime.strptime(itemlist[y+1][0].split(", ", 1)[1], "%m/%d/%Y, %H:%M:%S")
                 if datetimeobj1 > datetimeobj2:
                     itemlist[y], itemlist[y+1] = itemlist[y+1], itemlist[y]
-                    
-                    
+                   
+                   
     return itemlist
 
 def game():
@@ -224,7 +222,7 @@ def game():
         line((535-(len(displayWord)*40/2)+(40*letter)),250,(565-(len(displayWord)*40/2)+(40*letter)),250)
     textAlign(LEFT, BOTTOM)
     textSize(25)
-    text("Points: "+str(points), 20, height-20) 
+    text("Points: "+str(points), 20, height-20)
     if wrongGuesses == guessLimit:
         gamemode = "end"
     textAlign(RIGHT, BOTTOM)
@@ -247,7 +245,7 @@ def wordGenerator(): #get random guess word from list
         fileInfo.pop(randWord) #pop word from list when it is guessed correctly
     elif len(fileInfo) == 0: #if there are no words left in the list, player won
         gamemode = "won"
-        
+       
 def hintDisplay():  #if player clicks for hint, display hint
     textFont(font)
     textAlign(CENTER, CENTER)
@@ -276,7 +274,7 @@ def keyboardDisplay(): #display letters
             else:
                 fill(0)
             text(keyboard[x][y][0],40+width/2-((80*len(keyboard[x]))/2)+(80*y), 350+(80*x))
-            
+           
 def endScreen():
     global guessWord, scoreadded
     textFont(font)
@@ -309,7 +307,7 @@ def wonScreen():
     if scoreadded == False:
         addscore()
         scoreadded = True
-        
+       
 def addscore():
     global highscoreDict, points, playerName, fromhighscore, tohighscore
     filename = 'highscores'
@@ -347,39 +345,41 @@ def restart(): #restarts the game
     hintChosen = False
     scoreadded = False
     points = 0
-    
-    
+   
+   
 def mousePressed():
     global helpmode, prevGamemode, gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
-    #center coords of each letter on screen 
+    #center coords of each letter on screen
     keyCoords = [[40, 350], [120, 350], [200, 350], [280, 350], [360, 350], [440, 350], [520, 350], [600, 350], [680, 350], [760, 350], [80, 430], [160, 430], [240, 430], [320, 430], [400, 430], [480, 430], [560, 430], [640, 430], [720, 430], [160, 510], [240, 510], [320, 510], [400, 510], [480, 510], [560, 510], [640, 510]]
-    ##print(mouseX, mouseY)
+    print(mouseX, mouseY)
     if gamemode == "startMenu" and mouseButton == LEFT:
+       
         #if "start" clicked
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
             gamemode = "playerMenu"
+           
         #if "help" clicked
         if width/2-50 <= mouseX <= width/2+50 and 325 <= mouseY <= 380:
             gamemode = "helpMenu"
             helpmode = "help1"
+            prevGamemode = "startMenu"
             print(gamemode)
+           
         #if "scores clicked"
         if width/2-60 <= mouseX <= width/2+60 and 460 <= mouseY <= 485:
             gamemode = "scoresMenu"
             print("scores")
 
-    #if next arrow clicked in help menu
-    if 700 <= mouseX <= 735 and 510 <= mouseY <= 540:
-        helpmode = "help2"
-        #gamemode = "helpMenu"
-        print(helpmode)
     if gamemode == "helpMenu":
         if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
             if helpmode == "help1":
-                gamemode = "startMenu"
+                gamemode = prevGamemode
             if helpmode == "help2":
                 gamemode = "helpMenu"
                 helpmode = "help1"
+        #if next arrow clicked in help menu
+        if 700 <= mouseX <= 735 and 510 <= mouseY <= 540:
+            helpmode = "help2"
 
     #if "begin" clicked
     if gamemode == "playerMenu" and mouseButton == LEFT:
@@ -411,7 +411,7 @@ def mousePressed():
                 if keyboard[row][column][1] == True:  #if letter clicked, turn it off and add letter to listGuessed[]
                     keyboard[row][column][1] = False
                     listGuessed.append(keyboard[row][column][0])
-                for y in range(len(listGuessed)): 
+                for y in range(len(listGuessed)):
                     if listGuessed[y] in guessWord: #if clicked letter is in the guess word, add letter to displayWord[]
                         for z in range(guessWord.count(listGuessed[y])):
                             ###print("correct letter guessed")
@@ -443,6 +443,7 @@ def mousePressed():
         if 735 <= mouseX <= 780 and 555 <= mouseY <= 575:
             gamemode = "helpMenu"
             helpmode = "help1"
+            prevGamemode = "inGame"
         #if "menu" in game mode clicked
         if 660 <= mouseX <= 720 and 555 <= mouseY <= 575:
             gamemode = "startMenu"
@@ -452,7 +453,7 @@ def mousePressed():
     if gamemode == "won":
         if 250 <= mouseX <= 550 and 390 <= mouseY <= 420:
             restart()
-            
+           
 def keyPressed():  #player name
     global gamemode, playerName, guessLimit
     nameLimit = 20
