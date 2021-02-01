@@ -3,8 +3,9 @@ import random
 import time
 import pickle
 from datetime import datetime
+add_library("minim")
 def setup():
-    global scoreadded, highscore, fromhighscore, tohighscore, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscoreDict
+    global minim, click, bloop, scoreadded, gamemode, font, playerName, wrongGuesses, hangmanImage, guessLimit, keyboard, listGuessed, listWrongGuesses, points, hintChosen, highscoreDict
     gamemode = "startMenu"
     font = loadFont("BradleyHandITC-48.vlw")
     words = getFileInfo("hangmanwords.txt")
@@ -24,6 +25,10 @@ def setup():
     highscoreDict = {}
     hintChosen = False
     scoreadded = False
+    add_library('minim')
+    minim = Minim(this)
+    click = minim.loadFile("click.wav")
+    bloop = minim.loadFile("correct.wav")
    
            
 def draw():
@@ -118,8 +123,11 @@ def getPlayerName():
 def helpMenu(): #help menu
     global helpmode, prevGamemode
     imageMode(CORNER)
-    textSize(48)
     background(255)
+    textFont(font)
+    textAlign(CENTER)
+    textSize(48)
+    fill(0)
     if helpmode == "help1":
         help = loadImage("help1.jpg")
         image(help,0,60,830,450)
@@ -133,11 +141,9 @@ def helpMenu(): #help menu
         else:
             fill(0)
             text(">", 720, 540)
-
     if helpmode == "help2":
         help = loadImage("help2.jpg")
         image(help,0,80,830,400)
-       
     if 35 <= mouseX <= 64 and 24 <= mouseY <= 48:
         fill(225)
         text("<", 50, 50)
@@ -200,9 +206,7 @@ def sortlist(itemlist):
                 datetimeobj1 = datetime.strptime(itemlist[y][0].split(", ", 1)[1], "%m/%d/%Y, %H:%M:%S")
                 datetimeobj2 = datetime.strptime(itemlist[y+1][0].split(", ", 1)[1], "%m/%d/%Y, %H:%M:%S")
                 if datetimeobj1 > datetimeobj2:
-                    itemlist[y], itemlist[y+1] = itemlist[y+1], itemlist[y]
-                   
-                   
+                    itemlist[y], itemlist[y+1] = itemlist[y+1], itemlist[y]            
     return itemlist
 
 def game():
@@ -348,7 +352,7 @@ def restart(): #restarts the game
    
    
 def mousePressed():
-    global helpmode, prevGamemode, gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName
+    global helpmode, prevGamemode, gamemode, minLimit, wrongGuesses, keyboard, guessWord, listWrongGuesses, points, listGuessed, hintChosen, playerName, bloop, click
     #center coords of each letter on screen
     keyCoords = [[40, 350], [120, 350], [200, 350], [280, 350], [360, 350], [440, 350], [520, 350], [600, 350], [680, 350], [760, 350], [80, 430], [160, 430], [240, 430], [320, 430], [400, 430], [480, 430], [560, 430], [640, 430], [720, 430], [160, 510], [240, 510], [320, 510], [400, 510], [480, 510], [560, 510], [640, 510]]
     print(mouseX, mouseY)
@@ -357,6 +361,8 @@ def mousePressed():
         #if "start" clicked
         if width/2-50 <= mouseX <= width/2+50 and 200 <= mouseY <= 270:
             gamemode = "playerMenu"
+            click = minim.loadFile("click.wav")
+            click.play()
            
         #if "help" clicked
         if width/2-50 <= mouseX <= width/2+50 and 325 <= mouseY <= 380:
@@ -417,6 +423,8 @@ def mousePressed():
                             ###print("correct letter guessed")
                             displayWord[[i for i, n in enumerate(list(guessWord)) if n == listGuessed[y]][z]] = listGuessed[y]
                         if ''.join(displayWord) == guessWord: #if letters in displayWord[] match the guessWord, add points and generate new word, and reset keyboard, num wrong guesses, and list of guessed letters
+                            bloop = minim.loadFile("correct.wav")
+                            bloop.play()
                             if hintChosen == True:
                                 points += int(round(len(guessWord)/2))
                             else:
